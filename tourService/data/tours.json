@@ -1,0 +1,46 @@
+[
+    {
+        "id": 1,
+        "name": "Tour Đà Lạt 3N2Đ",
+        "destination": "Đà Lạt",
+        "duration": "3 ngày 2 đêm",
+        "price": 2500000,
+        "slots": 20,
+        "description": "Khám phá thành phố ngàn hoa, thác Datanla, hồ Tuyền Lâm.",
+        "image": "dalat.jpg",
+        "available": true
+    },
+    {
+        "id": 2,
+        "name": "Tour Phú Quốc 4N3Đ",
+        "destination": "Phú Quốc",
+        "duration": "4 ngày 3 đêm",
+        "price": 4500000,
+        "slots": 15,
+        "description": "Nghỉ dưỡng biển đảo, lặn ngắm san hô, ẩm thực hải sản.",
+        "image": "phuquoc.jpg",
+        "available": true
+    },
+    {
+        "id": 3,
+        "name": "Tour Hội An 2N1Đ",
+        "destination": "Hội An",
+        "duration": "2 ngày 1 đêm",
+        "price": 1800000,
+        "slots": 25,
+        "description": "Phố cổ Hội An, làng rau Trà Quế, đêm thả đèn hoa đăng.",
+        "image": "hoian.jpg",
+        "available": true
+    },
+    {
+        "id": 4,
+        "name": "Tour Sapa 3N2Đ",
+        "destination": "Sapa",
+        "duration": "3 ngày 2 đêm",
+        "price": 3200000,
+        "slots": 0,
+        "description": "Chinh phục Fansipan, bản Cát Cát, ruộng bậc thang Mù Cang Chải.",
+        "image": "sapa.jpg",
+        "available": false
+    }
+]
