@@ -7,9 +7,16 @@ class BookingRepository {
       conn = await pool.getConnection();
       const result = await conn.query(
         "INSERT INTO bookings (user_id, tour_id, quantity, total_price, status) VALUES (?, ?, ?, ?, ?)",
-        [booking.userId, booking.tourId, booking.quantity, booking.totalPrice, booking.status || "PENDING"],
+        [
+          booking.userId,
+          booking.tourId,
+          booking.quantity,
+          booking.totalPrice,
+          booking.status || "PENDING",
+        ],
       );
-      return { id: Number(result.insertId), ...booking };
+
+      return { id: Number(result[0].insertId), ...booking };
     } catch (err) {
       throw err;
     } finally {

@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Eye, EyeOff, Loader2, Lock, User } from "lucide-react"
+import { useNavigate } from "react-router"
+import { Eye, EyeOff, Loader2, Lock, User, AlertCircle } from "lucide-react"
 
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
@@ -11,37 +12,42 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
+import { useAuth } from "~/hooks/use-auth"
 
 export function RegisterForm() {
+  const navigate = useNavigate()
+  const { register } = useAuth()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [touched, setTouched] = useState({
     username: false,
     password: false,
     confirmPassword: false,
   })
+  const [error, setError] = useState("")
 
   const passwordsMatch = password === confirmPassword && confirmPassword.length > 0
   const showConfirmError = touched.confirmPassword && confirmPassword.length > 0 && !passwordsMatch
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
 
     if (!passwordsMatch) {
       setTouched((prev) => ({ ...prev, confirmPassword: true }))
       return
     }
 
-    setIsLoading(true)
-
-    // TODO: Implement actual register logic
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    setIsLoading(false)
+    try {
+      await register.mutateAsync({ username, password })
+      navigate("/login")
+    } catch (err) {
+      setError("Đăng ký thất bại. Vui lòng thử lại.")
+    }
   }
 
   const handleBlur = (field: string) => {
@@ -57,6 +63,13 @@ export function RegisterForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="size-4" />
+            <AlertTitle>Lỗi</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
@@ -142,8 +155,8 @@ export function RegisterForm() {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
+          <Button type="submit" className="w-full" disabled={register.isPending}>
+            {register.isPending ? (
               <>
                 <Loader2 className="mr-2 size-3.5 animate-spin" />
                 Creating account...

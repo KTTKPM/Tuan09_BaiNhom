@@ -3,5 +3,5 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 COPY . .
-EXPOSE 3001
+EXPOSE 8082
 CMD ["node", "index.js"]

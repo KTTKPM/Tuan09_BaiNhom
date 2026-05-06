@@ -3,7 +3,7 @@ const cors = require('cors');
 const tourRoutes = require('./routes/tours');
 
 const app = express();
-const PORT = 8082; // Đúng như đề bài yêu cầu
+const PORT = process.env.PORT || 8082;
 
 // ===== MIDDLEWARE =====
 app.use(cors()); // Cho phép cross-origin request

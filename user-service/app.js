@@ -20,7 +20,7 @@ app.post("/logout", userController.logout);
 // Error Middleware
 app.use(errorFilter);
 
-const PORT = 8081;
+const PORT = process.env.PORT || 8081;
 // Chạy trên IP LAN theo yêu cầu đề bài
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`User Service is running on port ${PORT}`);

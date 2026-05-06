@@ -1,7 +1,7 @@
 FROM node:18-alpine
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install
 COPY . .
-EXPOSE 3002
+EXPOSE 8083
 CMD ["node", "src/app.js"]

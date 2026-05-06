@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Eye, EyeOff, Loader2, Lock, User } from "lucide-react"
+import { useNavigate } from "react-router"
+import { Eye, EyeOff, Loader2, Lock, User, AlertCircle } from "lucide-react"
 
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
@@ -12,22 +13,28 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
+import { useAuth } from "~/hooks/use-auth"
 
 export function LoginForm() {
+  const navigate = useNavigate()
+  const { login } = useAuth()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    setError("")
 
-    // TODO: Implement actual login logic
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    setIsLoading(false)
+    try {
+      await login.mutateAsync({ username, password })
+      navigate("/")
+    } catch (err) {
+      setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.")
+    }
   }
 
   return (
@@ -39,6 +46,13 @@ export function LoginForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="size-4" />
+            <AlertTitle>Lỗi</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
@@ -100,8 +114,8 @@ export function LoginForm() {
             </Label>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
+          <Button type="submit" className="w-full" disabled={login.isPending}>
+            {login.isPending ? (
               <>
                 <Loader2 className="mr-2 size-3.5 animate-spin" />
                 Signing in...

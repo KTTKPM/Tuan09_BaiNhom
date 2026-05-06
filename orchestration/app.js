@@ -5,6 +5,7 @@ const cors = require("cors");
 dotenv.config();
 
 const bookingRoute = require("./routes/bookingRoute");
+const authRoute = require("./routes/authRoute");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,10 +14,11 @@ app.use(express.json());
 app.use(
   cors({
     origin: process.env.FRONTEND_ORIGIN || true,
-  })
+  }),
 );
 
-app.use("/", bookingRoute);
+app.use("/api/tours", bookingRoute);
+app.use("/api/auth", authRoute);
 
 app.get("/", (req, res) => {
   res.json({

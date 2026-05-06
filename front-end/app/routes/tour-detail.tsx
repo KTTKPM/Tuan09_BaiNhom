@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { useParams, Link } from "react-router"
-import { MapPin, Clock, Users, ArrowLeft, AlertCircle, ImageOff } from "lucide-react"
+import { useParams, Link, useNavigate } from "react-router"
+import { MapPin, Clock, Users, ArrowLeft, AlertCircle, ImageOff, Loader2, CheckCircle2 } from "lucide-react"
 
 import { Button } from "~/components/ui/button"
 import { Badge } from "~/components/ui/badge"
@@ -13,8 +13,7 @@ import {
   EmptyTitle,
   EmptyDescription,
 } from "~/components/ui/empty"
-import { tours } from "~/data/tours"
-import { isValidTour } from "~/routes/home"
+import { useTour } from "~/hooks/use-tour"
 
 export function formatPrice(price: number): string {
   return new Intl.NumberFormat("vi-VN", {
@@ -25,8 +24,25 @@ export function formatPrice(price: number): string {
 
 export default function TourDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+
+  const tourId = id ? Number(id) : undefined
+  const { tour, isLoading, error, bookTour } = useTour(tourId)
+
+  const handleBook = async () => {
+    if (!tour || !tourId) return
+    await bookTour.mutateAsync({
+      tourId,
+      userId: 1,
+      quantity: 1,
+      totalPrice: tour.price,
+    })
+    setShowSuccess(true)
+    setTimeout(() => setShowSuccess(false), 3000)
+  }
 
   if (!id || isNaN(Number(id))) {
     return (
@@ -52,10 +68,15 @@ export default function TourDetailPage() {
     )
   }
 
-  const tourId = Number(id)
-  const tour = tours.find((t) => t.id === tourId)
+  if (isLoading) {
+    return (
+      <div className="min-h-dvh bg-background p-4 md:p-8 flex items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
 
-  if (!tour || !isValidTour(tour)) {
+  if (error || !tour) {
     return (
       <div className="min-h-dvh bg-background p-4 md:p-8">
         <div className="mx-auto max-w-4xl">
@@ -66,7 +87,7 @@ export default function TourDetailPage() {
               </EmptyMedia>
               <EmptyTitle>Không tìm thấy tour</EmptyTitle>
               <EmptyDescription>
-                Tour với ID {tourId} không tồn tại hoặc có dữ liệu không hợp lệ.
+                Tour với ID {tourId} không tồn tại hoặc có lỗi xảy ra.
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
@@ -95,9 +116,19 @@ export default function TourDetailPage() {
           </Button>
         </div>
 
+        {showSuccess && (
+          <Alert className="mb-6 border-green-500 text-green-700 dark:text-green-400">
+            <CheckCircle2 className="size-4" />
+            <AlertTitle>Đặt tour thành công!</AlertTitle>
+            <AlertDescription>
+              Tour của bạn đã được đặt. Chúng tôi sẽ liên hệ bạn sớm.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <Card className="py-0">
           <div className="relative aspect-video w-full bg-muted">
-            {/* {!imageError && (
+            {!imageError && (
               <img
                 src={`/images/${tour.image}`}
                 alt={tour.name}
@@ -114,11 +145,7 @@ export default function TourDetailPage() {
                 <ImageOff className="size-12" />
                 <span className="text-sm">{tour.destination}</span>
               </div>
-            )} */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-              <ImageOff className="size-12" />
-              <span className="text-sm">{tour.destination}</span>
-            </div>
+            )}
             {!tour.available && (
               <Badge variant="destructive" className="absolute top-4 right-4">
                 Hết chỗ
@@ -170,8 +197,20 @@ export default function TourDetailPage() {
             <Button variant="outline" asChild>
               <Link to="/">Quay lại</Link>
             </Button>
-            <Button disabled={!tour.available}>
-              {tour.available ? "Đặt tour ngay" : "Tour đã hết chỗ"}
+            <Button
+              disabled={!tour.available || bookTour.isPending}
+              onClick={handleBook}
+            >
+              {bookTour.isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-3.5 animate-spin" />
+                  Đang xử lý...
+                </>
+              ) : tour.available ? (
+                "Đặt tour ngay"
+              ) : (
+                "Tour đã hết chỗ"
+              )}
             </Button>
           </CardFooter>
         </Card>

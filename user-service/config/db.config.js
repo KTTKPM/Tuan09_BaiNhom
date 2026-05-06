@@ -5,7 +5,7 @@ module.exports = {
     USER: process.env.DB_USER,
     PASSWORD: process.env.DB_PASS,
     DB: process.env.DB_NAME,
-    dialect: "mariadb",
+    dialect: "mysql",
     pool: {
         max: 5,
         min: 0,

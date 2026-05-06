@@ -1,0 +1,8 @@
+.git
+.gitignore
+.agents
+.opencode
+node_modules
+*.md
+docker-compose.yml
+.DS_Store
