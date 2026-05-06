@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  db-user:
+    image: mariadb:latest
+    environment:
+      MARIADB_ROOT_PASSWORD: sapassword
+      MARIADB_DATABASE: travel_user_db
+    ports:
+      - "3306:3306"
+
+  user-service:
+    build: .
+    ports:
+      - "8081:8081"
+    environment:
+      DB_HOST: db-user
+      DB_USER: root
+      DB_PASS: sapassword
+      DB_NAME: travel_user_db
+    depends_on:
+      - db-user
