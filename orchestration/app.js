@@ -5,6 +5,7 @@ const cors = require("cors");
 dotenv.config();
 
 const bookingRoute = require("./routes/bookingRoute");
+const gatewayRoute = require("./routes/gatewayRoute");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,10 +14,11 @@ app.use(express.json());
 app.use(
   cors({
     origin: process.env.FRONTEND_ORIGIN || true,
-  })
+  }),
 );
 
 app.use("/", bookingRoute);
+app.use("/", gatewayRoute);
 
 app.get("/", (req, res) => {
   res.json({
